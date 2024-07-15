@@ -1,0 +1,15 @@
+<!-- drawing-details-modal.component.html -->
+<div *ngIf="showModal" class="modal">
+  <div class="modal-content">
+    <span (click)="onCancel()" class="close">&times;</span>
+    <h2>Çizim Detayları</h2>
+    <label for="drawingName">Çizim Adı:</label>
+    <input type="text" id="drawingName" [(ngModel)]="drawingName" />
+
+    <p>Çizim Türü: {{ drawingType }}</p>
+    <p>Çizim Boyutu: {{ drawingSize }} {{ getUnit(drawingType) }}</p> <!-- Adjusted to show unit dynamically -->
+
+    <button (click)="onSave()">Kaydet</button>
+    <button (click)="onCancel()">İptal</button>
+  </div>
+</div>

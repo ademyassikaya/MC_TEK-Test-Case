@@ -1,0 +1,63 @@
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #add8e6; /* Açık mavi */
+    width: 100%;
+    padding: 10px 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .navbar-logo {
+    flex-shrink: 0;
+  }
+  
+  .navbar-logo img {
+    height: 40px; /* İhtiyaca göre ayarlayın */
+    width: auto;
+    margin-right: 20px;
+  }
+  
+  .navbar-links {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .navbar-links li {
+    margin-right: 20px;
+  }
+  
+  .navbar-links a {
+    text-decoration: none;
+    color: #000; /* Siyah */
+    font-weight: bold;
+  }
+  
+  .navbar-links a:hover {
+    color: #555; /* Daha açık bir siyah ton */
+  }
+  
+  .navbar-actions {
+    margin-left: auto;
+  }
+  .navbar-links .active {
+    color: #007bff; /* Example: Change to your active link color */
+    font-weight: bold; /* Example: Apply bold font for active link */
+  }
+  
+  .logout-button {
+    background-color: #f44336; /* Kırmızı */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 10px;
+  }
+  
+  .logout-button:hover {
+    background-color: #d32f2f; /* Daha koyu kırmızı */
+  }
+  
