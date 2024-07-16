@@ -1,16 +1,25 @@
-<!-- drawing-details-modal.component.html -->
 <div *ngIf="showModal" class="modal">
   <div class="modal-content">
     <span (click)="onCancel()" class="close">&times;</span>
-    <h2>Çizim Detayları</h2>
-    <label for="drawingName">Çizim Adı:</label>
-    <input type="text" id="drawingName" [(ngModel)]="drawingName" />
+    <h2>Draw Details</h2>
 
-    <p>Çizim Türü: {{ drawingType }}</p>
-    <p>Çizim Boyutu: {{ drawingSize }} {{ getUnit(drawingType) }}</p> <!-- Adjusted to show unit dynamically -->
+    <div class="form-group drawName">
+      <label for="drawingName">Draw Name:</label>
+      <input type="text" id="drawingName" [(ngModel)]="drawingName" />
+    </div>
 
-    <button (click)="onSave()">Kaydet</button>
-    <button *ngIf="!isNewDrawing()" (click)="onDeleteDrawing()">Sil</button>
-    <button (click)="onCancel()">İptal</button>
+    <div class="form-group drawKind">
+      <label for="drawingType">Draw Kind:</label>
+      <span>{{ drawingType }}</span>
+    </div>
+
+    <div class="form-group drawSize">
+      <label for="drawingSize">Draw Size:</label>
+      <span>{{ drawingSize }} {{ getUnit(drawingType) }}</span>
+    </div>
+
+    <button (click)="onSave()" class="saveButton">Save</button>
+    <button *ngIf="!isNewDrawing()" class="deleteButton" (click)="onDeleteDrawing()">Delete</button>
+    <button (click)="onCancel()" class="cancelButton">Cancel</button>
   </div>
 </div>

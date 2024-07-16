@@ -1,13 +1,17 @@
 <div class="login-card">
-
     <div class="card-title">
         <h1>Login</h1>
         <span>You don't have an account? <a routerLink="/signup">Sign up</a></span>
     </div>
     <form class="form-group" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-        <input name="email" type="email" formControlName="email" placeholder="Email">
-        <input type="password" formControlName="password" placeholder="Password">
-        <button>Submit</button>
+        <div class="input-group">
+            <label for="email">Email</label>
+            <input name="email" id="email" type="email" formControlName="email" placeholder="Enter your email">
+        </div>
+        <div class="input-group">
+            <label for="password">Password</label>
+            <input name="password" id="password" type="password" formControlName="password" placeholder="Enter your password">
+        </div>
+        <button type="submit">Login</button>
     </form>
-
 </div>

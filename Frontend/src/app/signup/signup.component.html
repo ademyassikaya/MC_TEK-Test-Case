@@ -1,16 +1,25 @@
 <div class="signup-card">
     <div class="card-title">
         <h1>Create Account</h1>
-        <span>Already have an account? <a routerLink="/login">Sign In</a></span>
+        <span>Already have an account? <a href="#">Sign In</a></span>
     </div>
     <form class="form-group" [formGroup]="signupForm" (ngSubmit)="onSubmit()">
-        <input type="text" name="name" placeholder="Name" formControlName="name">
-        <input type="text" name="surname" placeholder="Surname" formControlName="surname">
-        <input type="email" name="email" placeholder="Email" formControlName="email">
-        <input type="password" name="password" placeholder="Password" formControlName="password">
-        <input type="submit" value="Signup" [disabled]="!signupForm.valid">
+        <div class="input-group">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" formControlName="name" placeholder="Enter your name">
+        </div>
+        <div class="input-group">
+            <label for="surname">Surname</label>
+            <input type="text" id="surname" name="surname" formControlName="surname" placeholder="Enter your surname">
+        </div>
+        <div class="input-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" formControlName="email" placeholder="Enter your email">
+        </div>
+        <div class="input-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" formControlName="password" placeholder="Enter your password">
+        </div>
+        <button type="submit" [disabled]="!signupForm.valid">Signup</button>
     </form>
-    <div class="card-terms">
-        <input type="checkbox"> <span>I have read and agree to the <a href="">Terms of Service</a></span>
-    </div>
 </div>

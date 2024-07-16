@@ -7,45 +7,81 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color:white;
-
+    background-color: #f0f0f0; /* Arka plan rengi */
 }
 
 .login-card {
     display: flex;
     flex-direction: column;
-    margin: 10px 10px;
+    margin: 10px;
     box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.3);
     background-color: #ffffff;
-    padding: 10px;
+    padding: 20px;
     border-radius: 10px;
-    width: 40%;
-
+    width: 30%; /* Kartın genişliği */
 }
 
-.login-card input {
-    margin: 5px 0;
-    width: 100%;
-    background-color: #e2e2e2;
-    border: none;
-    outline: none;
-    padding: 12px 20px;
+.card-title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.card-title h1 {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.card-title span {
+    font-size: 14px;
+}
+
+.card-title a {
+    color: #4796ff;
+    text-decoration: none;
+    margin-left: 5px;
+}
+
+.card-title a:hover {
+    text-decoration: underline;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.input-group input {
+    padding: 10px;
+    border: 1px solid #ccc;
     border-radius: 4px;
+    outline: none;
 }
 
-.login-card button {
+button {
     background-color: #4796ff;
     color: #ffffff;
     font-size: 16px;
-    outline: none;
-    border-radius: 5px;
     border: none;
-    padding: 8px 15px;
-    width: 100%;
+    border-radius: 5px;
+    padding: 12px 20px;
+    cursor: pointer;
 }
 
-
-.card-title h1 {
-    font-size: 26px;
-    font-weight: bold;
+button:hover {
+    background-color: #3074c7;
 }
