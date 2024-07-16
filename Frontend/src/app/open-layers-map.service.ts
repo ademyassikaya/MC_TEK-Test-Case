@@ -19,14 +19,17 @@ import { ModifyEvent } from 'ol/interaction/Modify';
   providedIn: 'root',
 })
 export class OpenLayersMapService {
-  private map!: Map;
+  private map: Map | undefined = undefined;
   private vectorSource!: VectorSource;
   private drawInteraction?: Draw;
   drawEnd = new EventEmitter<DrawEvent>();
   modifyEnd = new EventEmitter<ModifyEvent>(); // Add modifyEnd EventEmitter
+  viewChanged = new EventEmitter<{ center: number[]; zoom: number }>(); // Explicit type declaration
+
   private modifiedFeatureId: string | null = null;
 
   initializeMap(target: string): void {
+    // Ensure map is only initialized once
     this.vectorSource = new VectorSource({ wrapX: false });
 
     const vectorLayer = new VectorLayer({
@@ -56,9 +59,38 @@ export class OpenLayersMapService {
       layers: [rasterLayer, vectorLayer],
       target: target,
       view: new View({
-        center: [0, 0],
-        zoom: 2,
+        center: [0, 0], // Default center if no localStorage value found
+        zoom: 2, // Default zoom level if no localStorage value found
       }),
+    });
+    setTimeout(() => {
+      this.map?.updateSize();
+    }, 0);
+
+    // Check if there are stored center and zoom values in localStorage
+    const storedCenter = localStorage.getItem('mapCenter');
+    const storedZoom = localStorage.getItem('mapZoom');
+
+    if (storedCenter && storedZoom) {
+      const center = JSON.parse(storedCenter);
+      const zoom = parseFloat(storedZoom);
+      this.map.getView().setCenter(center);
+      this.map.getView().setZoom(zoom);
+    }
+
+    // Listen to view changes and update localStorage
+    this.map.getView().on('change', () => {
+      const view = this.map?.getView();
+      const center = view?.getCenter();
+      const zoom = view?.getZoom();
+
+      if (center !== undefined && zoom !== undefined) {
+        this.viewChanged.emit({ center, zoom });
+
+        // Save center and zoom to localStorage
+        localStorage.setItem('mapCenter', JSON.stringify(center));
+        localStorage.setItem('mapZoom', zoom.toString());
+      }
     });
 
     // Add modify and snap interactions
@@ -75,7 +107,7 @@ export class OpenLayersMapService {
 
   setDrawingMode(mode: string): void {
     if (this.drawInteraction) {
-      this.map.removeInteraction(this.drawInteraction);
+      this.map?.removeInteraction(this.drawInteraction);
     }
 
     if (mode !== 'None') {
@@ -105,49 +137,54 @@ export class OpenLayersMapService {
 
       // Ensure the drawing interaction ends when the shape is complete
       this.drawInteraction.on('drawend', (event: DrawEvent) => {
-        this.map.removeInteraction(this.drawInteraction!);
+        this.map?.removeInteraction(this.drawInteraction!);
         this.drawInteraction = undefined;
         this.drawEnd.emit(event); // Emit the DrawEvent
       });
 
-      this.map.addInteraction(this.drawInteraction);
+      this.map?.addInteraction(this.drawInteraction);
     }
   }
 
   loadDrawings(drawings: any[]): void {
-    console.log('tesload');
-    drawings.forEach((drawing) => {
-      let geometry;
-      const coordinates = JSON.parse(drawing.coordinates);
+    if (this.map) {
+      drawings.forEach((drawing) => {
+        let geometry;
+        const coordinates = JSON.parse(drawing.coordinates);
 
-      switch (drawing.kind) {
-        case 'Polygon':
-          geometry = new Polygon([coordinates]);
-          break;
-        case 'LineString':
-          geometry = new LineString(coordinates);
-          break;
-        case 'Circle':
-          const [center, edge] = coordinates;
-          const radius = Math.sqrt(
-            Math.pow(edge[0] - center[0], 2) + Math.pow(edge[1] - center[1], 2)
-          );
-          geometry = new Circle(center, radius);
-          break;
-        case 'Point':
-          geometry = new Point(coordinates);
-          break;
-        default:
-          return;
-      }
+        switch (drawing.kind) {
+          case 'Polygon':
+            geometry = new Polygon([coordinates]);
+            break;
+          case 'LineString':
+            geometry = new LineString(coordinates);
+            break;
+          case 'Circle':
+            const [center, edge] = coordinates;
+            const radius = Math.sqrt(
+              Math.pow(edge[0] - center[0], 2) +
+                Math.pow(edge[1] - center[1], 2)
+            );
+            geometry = new Circle(center, radius);
+            break;
+          case 'Point':
+            // Ensure coordinates exist and are in the correct format
+            if (coordinates && coordinates.length === 1) {
+              geometry = new Point(coordinates[0]); // Assuming Point coordinates are in the first element of the array
+            }
+            break;
+          default:
+            return;
+        }
 
-      const feature = new Feature({ geometry });
-      feature.setId(drawing.id);
-      this.vectorSource.addFeature(feature);
-    });
+        const feature = new Feature({ geometry });
+        feature.setId(drawing.id);
+        this.vectorSource.addFeature(feature);
+      });
+    }
   }
+
   handleModifyEnd(event: ModifyEvent): void {
-    console.log('tsddhnmmmmmmmm');
     const features = event.features.getArray();
     if (features.length > 0) {
       const modifiedFeature = features[0]; // Assuming modifying only one feature at a time
@@ -155,7 +192,6 @@ export class OpenLayersMapService {
       this.modifiedFeatureId =
         featureId !== undefined ? featureId.toString() : null;
       // Now you can use featureId to identify the modified drawing
-      console.log('Modified feature ID:', featureId);
 
       // Optionally, you can send this ID to your backend for further processing
     }
@@ -165,5 +201,13 @@ export class OpenLayersMapService {
   }
   setModifiedDrawingId(id: string | null) {
     this.modifiedFeatureId = id;
+  }
+
+  setMapUndefined(): void {
+    this.map = undefined;
+  }
+
+  getMap(): Map | undefined {
+    return this.map;
   }
 }

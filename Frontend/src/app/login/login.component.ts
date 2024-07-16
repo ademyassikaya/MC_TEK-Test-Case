@@ -30,7 +30,6 @@ export class LoginComponent {
         if (this.authService.isLoggedIn()) {
           this.router.navigate(['/home']);
         }
-        console.log(data);
         localStorage.setItem('accessToken', data.accessToken);
         localStorage.setItem('refreshToken', data.refreshToken);
       });

@@ -1,2 +1,37 @@
 <app-navbar></app-navbar>
-<div>sa dashboard</div>
+<div class="dashboard-container">
+  <h2>Reports</h2>
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Kind</th>
+        <th>Name</th>
+        <th>Size</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of data">
+        <td>{{ item.kind }}</td>
+        <td>{{ item.name }}</td>
+        <td>{{ item.size }}</td>
+        <td>
+          <a (click)="openEditModal(item)">
+            <img src="edit.png" class="editicon"/>
+          </a>
+          <a (click)="deleteItem(item)">
+            <img src="delete.png" class="deleteicon"/>
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <app-edit-report-modal
+    *ngIf="isEditModalOpen"
+    [report]="selectedReport"
+    (close)="closeEditModal()"
+    (update)="updateReport($event)">
+  </app-edit-report-modal>
+</div>

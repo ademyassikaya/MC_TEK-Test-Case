@@ -11,7 +11,7 @@ import { OpenLayersMapService } from '../open-layers-map.service';
 import { DrawingDetailsModalComponent } from '../drawing-details-modal/drawing-details-modal.component';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { AuthService } from '../auth/auth.service';
-import { Circle } from 'ol/geom';
+import { Circle, Point } from 'ol/geom';
 import axios from 'axios';
 import { ModifyEvent } from 'ol/interaction/Modify';
 
@@ -30,7 +30,8 @@ import { ModifyEvent } from 'ol/interaction/Modify';
 })
 export class AdminComponent implements AfterViewInit {
   ngOnInit(): void {
-    this.getData();
+    console.log(0);
+    // this.getData();
   }
   openLayersMapService = inject(OpenLayersMapService);
   httpClient = inject(HttpClient);
@@ -49,9 +50,19 @@ export class AdminComponent implements AfterViewInit {
     this.openLayersMapService.setDrawingMode(selectedValue);
   }
 
+  ngOnDestroy(): void {
+    this.openLayersMapService.setMapUndefined();
+  }
+
   ngAfterViewInit(): void {
-    console.log('AdminComponent initializedtrrrr');
+    this.openLayersMapService.viewChanged.subscribe(({ center, zoom }) => {});
+
     this.openLayersMapService.initializeMap('map');
+
+    if (this.openLayersMapService?.getMap()) {
+      this.getData();
+    }
+
     this.openLayersMapService.drawEnd.subscribe((event: DrawEvent) => {
       const feature = event.feature;
       const geometry: Geometry | undefined = feature.getGeometry();
@@ -79,6 +90,10 @@ export class AdminComponent implements AfterViewInit {
             center[0] - radius,
             center[1],
           ];
+        } else if (geometry instanceof Point) {
+          const coordinates = geometry.getCoordinates();
+          this.flatCoordinates = coordinates;
+          console.log('trt1', this.flatCoordinates);
         }
         this.drawingType = geometry.getType();
         this.drawingSize = this.calculateSize(geometry);
@@ -86,14 +101,12 @@ export class AdminComponent implements AfterViewInit {
       }
     });
     this.openLayersMapService.modifyEnd.subscribe((event: ModifyEvent) => {
-      console.log('testevent', event);
       const features = event.features.getArray();
       if (features.length > 0) {
         const feature = features[0]; // Assuming modifying only one feature at a time
         const geometry: Geometry | undefined = feature.getGeometry();
         if (geometry) {
           let coordinates: number[] = [];
-
           if (geometry instanceof Polygon) {
             coordinates = this.flattenCoordinates(geometry.getCoordinates()[0]);
           } else if (geometry instanceof LineString) {
@@ -113,12 +126,14 @@ export class AdminComponent implements AfterViewInit {
               center[0] - radius,
               center[1],
             ];
+          } else if (geometry instanceof Point) {
+            const coordinates = geometry.getCoordinates();
+            this.flatCoordinates = [coordinates[0], coordinates[1]];
+            console.log('trt', this.flatCoordinates);
           }
-
           this.drawingType = geometry.getType();
           this.drawingSize = this.calculateSize(geometry);
           this.showModal = true;
-
           // Assuming flatCoordinates is an array or object property
           this.flatCoordinates = coordinates; // Update flatCoordinates property
         }
@@ -168,7 +183,7 @@ export class AdminComponent implements AfterViewInit {
         withCredentials: false,
       })
       .then((response) => {
-        console.log('Kullanıcı bilgisi alındı:', response.data);
+        console.log('Veri:', response.data);
         this.openLayersMapService.loadDrawings(response.data);
         // İşlemlerinizi burada gerçekleştirin.
       })
@@ -197,7 +212,6 @@ export class AdminComponent implements AfterViewInit {
     };
 
     const existingDrawingId = this.openLayersMapService.getModifiedDrawingId();
-    console.log('existingDrawingId:', existingDrawingId);
     if (existingDrawingId) {
       axios
         .put(`http://localhost:3000/draw/${existingDrawingId}`, drawingData, {
@@ -205,9 +219,9 @@ export class AdminComponent implements AfterViewInit {
           withCredentials: false,
         })
         .then((response) => {
-          console.log('Drawing updated successfully:', response.data);
           this.openLayersMapService.setDrawingMode(this.drawingType);
           this.showModal = false;
+          window.location.reload();
         })
         .catch((error) => {
           console.error('Error updating drawing:', error);
@@ -219,15 +233,43 @@ export class AdminComponent implements AfterViewInit {
           withCredentials: false,
         })
         .then((response) => {
-          console.log('Drawing saved successfully:', response.data);
           this.openLayersMapService.setDrawingMode(this.drawingType);
           const newDrawingId = response.data.id;
           this.openLayersMapService.setModifiedDrawingId(newDrawingId);
 
           this.showModal = false;
+          window.location.reload();
         })
         .catch((error) => {
           console.error('Error saving drawing:', error);
+        });
+    }
+  }
+
+  onDeleteDrawing() {
+    const existingDrawingId = this.openLayersMapService.getModifiedDrawingId();
+    if (existingDrawingId) {
+      // Get accessToken from localStorage
+      const accessToken = localStorage.getItem('accessToken');
+
+      // Include accessToken in Axios request headers
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
+      };
+
+      axios
+        .delete(`http://localhost:3000/draw/${existingDrawingId}`, {
+          headers,
+          withCredentials: false,
+        })
+        .then((response) => {
+          this.openLayersMapService.setDrawingMode(this.drawingType);
+          this.openLayersMapService.setModifiedDrawingId(null);
+          this.showModal = false;
+          window.location.reload();
+        })
+        .catch((error) => {
+          console.error('Error deleting drawing:', error);
         });
     }
   }

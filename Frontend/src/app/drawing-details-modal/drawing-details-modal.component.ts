@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgModel } from '@angular/forms';
+import { OpenLayersMapService } from '../open-layers-map.service';
 
 @Component({
   selector: 'app-drawing-details-modal',
@@ -20,8 +21,10 @@ export class DrawingDetailsModalComponent {
     size: number;
   }>();
   @Output() cancel = new EventEmitter<void>();
+  @Output() onDelete = new EventEmitter<void>();
 
   drawingName = '';
+  openLayersMapService = inject(OpenLayersMapService);
   ngOnChanges(changes: any) {
     if (
       changes.showModal &&
@@ -39,11 +42,18 @@ export class DrawingDetailsModalComponent {
       size: this.drawingSize,
     });
   }
+  onDeleteDrawing() {
+    this.onDelete.emit(); // Emit delete event
+  }
 
   onCancel() {
     this.cancel.emit();
   }
 
+  isNewDrawing(): boolean {
+    const existingDrawingId = this.openLayersMapService.getModifiedDrawingId();
+    return existingDrawingId ? false : true;
+  }
   private reset() {
     this.drawingName = ''; // Reset drawingName
   }

@@ -10,6 +10,7 @@
     <p>Çizim Boyutu: {{ drawingSize }} {{ getUnit(drawingType) }}</p> <!-- Adjusted to show unit dynamically -->
 
     <button (click)="onSave()">Kaydet</button>
+    <button *ngIf="!isNewDrawing()" (click)="onDeleteDrawing()">Sil</button>
     <button (click)="onCancel()">İptal</button>
   </div>
 </div>

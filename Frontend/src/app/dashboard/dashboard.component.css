@@ -1,0 +1,48 @@
+/* dashboard.component.css */
+.dashboard-container {
+    padding: 20px;
+  }
+  
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .data-table th, .data-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  .deleteicon{
+   width: 20px;
+    height: 20px;
+    margin-left: 25px;
+  }
+  .editicon{
+    width: 20px;
+    height: 20px;
+    margin-right: 25px;
+  }
+  .data-table th {
+    background-color: #f2f2f2;
+  }
+  
+  .data-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  
+  .data-table tr:hover {
+    background-color: #ddd;
+  }
+  
+  .data-table td a {
+    color: #007bff;
+    text-decoration: none;
+    margin-right: 10px;
+  }
+  
+  .data-table td a:hover {
+    text-decoration: underline;
+  }
+  
