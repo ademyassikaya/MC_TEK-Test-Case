@@ -1,10 +1,8 @@
 import services from "../../services/index.js";
 
 export default async function login(req, res) {
-  // Get the user data from the request body
   const { email, password } = req.body;
 
-  // Call the login service with the user data
   try {
     const response = await services.user.login({ email, password });
 

@@ -11,7 +11,6 @@ export default async function authMiddleware(req, res, next) {
   let accessToken = req.headers.authorization?.split(" ")[1];
   const refreshToken = req.headers["x-refresh-token"];
 
-  // TODO Frontend tarafinda her request'e refreshToken'i da eklemelisin
   if (!accessToken) {
     return res
       .status(401)
@@ -19,7 +18,6 @@ export default async function authMiddleware(req, res, next) {
   }
 
   try {
-    // If access token is valid, proceed
     if (accessToken) {
       const decodedAccessToken = verifyAccessToken(accessToken);
       const user = await prisma.user.findUnique({
@@ -35,7 +33,6 @@ export default async function authMiddleware(req, res, next) {
       return next();
     }
 
-    // If access token is not present or invalid, try with refresh token
     if (refreshToken) {
       const decodedRefreshToken = verifyRefreshToken(refreshToken);
       const user = await prisma.user.findUnique({
@@ -48,14 +45,12 @@ export default async function authMiddleware(req, res, next) {
         return res.status(404).json({ message: "User not found" });
       }
 
-      // Generate new access token
       const newAccessToken = generateAccessToken(user.id);
       res.setHeader("Authorization", `Bearer ${newAccessToken}`);
       req.userId = user.id;
       return next();
     }
   } catch (error) {
-    // Token verification failed
     return res.status(401).json({ message: "Unauthorized" });
   }
 }

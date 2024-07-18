@@ -26,7 +26,6 @@ app.get("/ping", (req, res) => {
   res.json({ message: "This is a protected route" });
 });
 
-// Error handler middleware
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 8888;
