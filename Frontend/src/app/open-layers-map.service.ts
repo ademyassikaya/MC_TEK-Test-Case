@@ -1,19 +1,19 @@
-import { Injectable, EventEmitter } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
+import { Feature } from 'ol';
 import Map from 'ol/Map';
 import View from 'ol/View';
-import TileLayer from 'ol/layer/Tile';
-import OSM from 'ol/source/OSM';
-import { Draw, Modify, Snap } from 'ol/interaction';
-import { DrawEvent } from 'ol/interaction/Draw'; // Correct import for DrawEvent
-import VectorSource from 'ol/source/Vector';
-import { Vector as VectorLayer } from 'ol/layer';
-import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style';
-import { Feature } from 'ol';
-import Polygon from 'ol/geom/Polygon';
+import Circle from 'ol/geom/Circle';
 import LineString from 'ol/geom/LineString';
 import Point from 'ol/geom/Point';
-import Circle from 'ol/geom/Circle';
+import Polygon from 'ol/geom/Polygon';
+import { Draw, Modify, Snap } from 'ol/interaction';
+import { DrawEvent } from 'ol/interaction/Draw';
 import { ModifyEvent } from 'ol/interaction/Modify';
+import { Vector as VectorLayer } from 'ol/layer';
+import TileLayer from 'ol/layer/Tile';
+import OSM from 'ol/source/OSM';
+import VectorSource from 'ol/source/Vector';
+import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style';
 
 @Injectable({
   providedIn: 'root',
@@ -23,13 +23,12 @@ export class OpenLayersMapService {
   private vectorSource!: VectorSource;
   private drawInteraction?: Draw;
   drawEnd = new EventEmitter<DrawEvent>();
-  modifyEnd = new EventEmitter<ModifyEvent>(); // Add modifyEnd EventEmitter
-  viewChanged = new EventEmitter<{ center: number[]; zoom: number }>(); // Explicit type declaration
+  modifyEnd = new EventEmitter<ModifyEvent>();
+  viewChanged = new EventEmitter<{ center: number[]; zoom: number }>();
 
   private modifiedFeatureId: string | null = null;
 
   initializeMap(target: string): void {
-    // Ensure map is only initialized once
     this.vectorSource = new VectorSource({ wrapX: false });
 
     const vectorLayer = new VectorLayer({
@@ -59,15 +58,14 @@ export class OpenLayersMapService {
       layers: [rasterLayer, vectorLayer],
       target: target,
       view: new View({
-        center: [0, 0], // Default center if no localStorage value found
-        zoom: 2, // Default zoom level if no localStorage value found
+        center: [0, 0],
+        zoom: 2,
       }),
     });
     setTimeout(() => {
       this.map?.updateSize();
     }, 0);
 
-    // Check if there are stored center and zoom values in localStorage
     const storedCenter = localStorage.getItem('mapCenter');
     const storedZoom = localStorage.getItem('mapZoom');
 
@@ -78,7 +76,6 @@ export class OpenLayersMapService {
       this.map.getView().setZoom(zoom);
     }
 
-    // Listen to view changes and update localStorage
     this.map.getView().on('change', () => {
       const view = this.map?.getView();
       const center = view?.getCenter();
@@ -87,17 +84,15 @@ export class OpenLayersMapService {
       if (center !== undefined && zoom !== undefined) {
         this.viewChanged.emit({ center, zoom });
 
-        // Save center and zoom to localStorage
         localStorage.setItem('mapCenter', JSON.stringify(center));
         localStorage.setItem('mapZoom', zoom.toString());
       }
     });
 
-    // Add modify and snap interactions
     const modify = new Modify({ source: this.vectorSource });
     modify.on('modifyend', (event: ModifyEvent) => {
       this.handleModifyEnd(event);
-      this.modifyEnd.emit(event); // Emit the ModifyEvent
+      this.modifyEnd.emit(event);
     });
     this.map.addInteraction(modify);
 
@@ -135,11 +130,10 @@ export class OpenLayersMapService {
         type: geometryType,
       });
 
-      // Ensure the drawing interaction ends when the shape is complete
       this.drawInteraction.on('drawend', (event: DrawEvent) => {
         this.map?.removeInteraction(this.drawInteraction!);
         this.drawInteraction = undefined;
-        this.drawEnd.emit(event); // Emit the DrawEvent
+        this.drawEnd.emit(event);
       });
 
       this.map?.addInteraction(this.drawInteraction);
@@ -168,9 +162,8 @@ export class OpenLayersMapService {
             geometry = new Circle(center, radius);
             break;
           case 'Point':
-            // Ensure coordinates exist and are in the correct format
             if (coordinates && coordinates.length === 1) {
-              geometry = new Point(coordinates[0]); // Assuming Point coordinates are in the first element of the array
+              geometry = new Point(coordinates[0]);
             }
             break;
           default:
@@ -187,13 +180,10 @@ export class OpenLayersMapService {
   handleModifyEnd(event: ModifyEvent): void {
     const features = event.features.getArray();
     if (features.length > 0) {
-      const modifiedFeature = features[0]; // Assuming modifying only one feature at a time
-      const featureId = modifiedFeature.getId(); // Get ID of the modified feature
+      const modifiedFeature = features[0];
+      const featureId = modifiedFeature.getId();
       this.modifiedFeatureId =
         featureId !== undefined ? featureId.toString() : null;
-      // Now you can use featureId to identify the modified drawing
-
-      // Optionally, you can send this ID to your backend for further processing
     }
   }
   getModifiedDrawingId(): string | null {

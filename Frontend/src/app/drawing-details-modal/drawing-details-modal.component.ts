@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NgModel } from '@angular/forms';
 import { OpenLayersMapService } from '../open-layers-map.service';
 
 @Component({
@@ -43,7 +42,7 @@ export class DrawingDetailsModalComponent {
     });
   }
   onDeleteDrawing() {
-    this.onDelete.emit(); // Emit delete event
+    this.onDelete.emit();
   }
 
   onCancel() {
@@ -55,10 +54,10 @@ export class DrawingDetailsModalComponent {
     return existingDrawingId ? false : true;
   }
   private reset() {
-    this.drawingName = ''; // Reset drawingName
+    this.drawingName = '';
   }
 
   getUnit(type: string): string {
-    return type === 'Polygon' || type === 'Circle' ? 'm²' : 'm'; // Adjust as per your requirements
+    return type === 'Polygon' || type === 'Circle' ? 'm²' : 'm';
   }
 }

@@ -1,22 +1,22 @@
-import { Component, AfterViewInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { AfterViewInit, Component, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+import axios from 'axios';
+import { Circle, Point } from 'ol/geom';
 import Geometry from 'ol/geom/Geometry';
-import Polygon from 'ol/geom/Polygon';
 import LineString from 'ol/geom/LineString';
+import Polygon from 'ol/geom/Polygon';
 import { DrawEvent } from 'ol/interaction/Draw';
-import { OpenLayersMapService } from '../open-layers-map.service';
+import { ModifyEvent } from 'ol/interaction/Modify';
+import { AuthService } from '../auth/auth.service';
 import { DrawingDetailsModalComponent } from '../drawing-details-modal/drawing-details-modal.component';
 import { NavbarComponent } from '../navbar/navbar.component';
-import { AuthService } from '../auth/auth.service';
-import { Circle, Point } from 'ol/geom';
-import axios from 'axios';
-import { ModifyEvent } from 'ol/interaction/Modify';
+import { OpenLayersMapService } from '../open-layers-map.service';
 
 @Component({
-  selector: 'app-admin',
+  selector: 'app-home',
   standalone: true,
   imports: [
     CommonModule,
@@ -25,12 +25,11 @@ import { ModifyEvent } from 'ol/interaction/Modify';
     DrawingDetailsModalComponent,
     NavbarComponent,
   ],
-  templateUrl: './admin.component.html',
-  styleUrls: ['./admin.component.css'],
+  templateUrl: './home.component.html',
+  styleUrls: ['./home.component.css'],
 })
-export class AdminComponent implements AfterViewInit {
+export class HomeComponent implements AfterViewInit {
   ngOnInit(): void {
-    console.log(0);
     // this.getData();
   }
   openLayersMapService = inject(OpenLayersMapService);
@@ -93,7 +92,6 @@ export class AdminComponent implements AfterViewInit {
         } else if (geometry instanceof Point) {
           const coordinates = geometry.getCoordinates();
           this.flatCoordinates = coordinates;
-          console.log('trt1', this.flatCoordinates);
         }
         this.drawingType = geometry.getType();
         this.drawingSize = this.calculateSize(geometry);
@@ -103,7 +101,7 @@ export class AdminComponent implements AfterViewInit {
     this.openLayersMapService.modifyEnd.subscribe((event: ModifyEvent) => {
       const features = event.features.getArray();
       if (features.length > 0) {
-        const feature = features[0]; // Assuming modifying only one feature at a time
+        const feature = features[0];
         const geometry: Geometry | undefined = feature.getGeometry();
         if (geometry) {
           let coordinates: number[] = [];
@@ -129,13 +127,11 @@ export class AdminComponent implements AfterViewInit {
           } else if (geometry instanceof Point) {
             const coordinates = geometry.getCoordinates();
             this.flatCoordinates = [coordinates[0], coordinates[1]];
-            console.log('trt', this.flatCoordinates);
           }
           this.drawingType = geometry.getType();
           this.drawingSize = this.calculateSize(geometry);
           this.showModal = true;
-          // Assuming flatCoordinates is an array or object property
-          this.flatCoordinates = coordinates; // Update flatCoordinates property
+          this.flatCoordinates = coordinates;
         }
       }
     });
@@ -171,9 +167,7 @@ export class AdminComponent implements AfterViewInit {
     return area;
   }
   getData() {
-    // Örnek kullanıcı kimliği, gerçek projenizde bu değeri kullanıcı oturum açma işleminden almalısınız.
     const accessToken = localStorage.getItem('accessToken');
-    // Axios kullanarak GET isteği gönderme
     const headers = {
       Authorization: `Bearer ${accessToken}`,
     };
@@ -183,9 +177,7 @@ export class AdminComponent implements AfterViewInit {
         withCredentials: false,
       })
       .then((response) => {
-        console.log('Veri:', response.data);
         this.openLayersMapService.loadDrawings(response.data);
-        // İşlemlerinizi burada gerçekleştirin.
       })
       .catch((error) => {
         console.error('Hata oluştu:', error);
@@ -193,7 +185,6 @@ export class AdminComponent implements AfterViewInit {
   }
 
   onSaveDrawing(details: { name: string; type: string; size: number }) {
-    // size bilgisini string parse edermisin
     const sizeParse = details.size.toString();
 
     const drawingData = {
@@ -203,10 +194,8 @@ export class AdminComponent implements AfterViewInit {
       coordinates: this.flatCoordinates,
     };
 
-    // Get accessToken from localStorage
     const accessToken = localStorage.getItem('accessToken');
 
-    // Include accessToken in Axios request headers
     const headers = {
       Authorization: `Bearer ${accessToken}`,
     };
@@ -249,10 +238,8 @@ export class AdminComponent implements AfterViewInit {
   onDeleteDrawing() {
     const existingDrawingId = this.openLayersMapService.getModifiedDrawingId();
     if (existingDrawingId) {
-      // Get accessToken from localStorage
       const accessToken = localStorage.getItem('accessToken');
 
-      // Include accessToken in Axios request headers
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };
@@ -276,7 +263,6 @@ export class AdminComponent implements AfterViewInit {
 
   onCancelDrawing() {
     this.showModal = false;
-    // Keep drawing mode for the current type
     this.openLayersMapService.setDrawingMode(this.drawingType);
   }
 }

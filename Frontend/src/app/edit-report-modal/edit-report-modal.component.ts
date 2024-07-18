@@ -1,5 +1,5 @@
-import { Component, inject, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import axios from 'axios';
 
@@ -28,7 +28,6 @@ export class EditReportModalComponent {
     const headers = {
       Authorization: `Bearer ${accessToken}`,
     };
-    console.log('Güncellenen veri:', this.updatedReport);
 
     axios
       .put(
@@ -42,7 +41,6 @@ export class EditReportModalComponent {
         { headers, withCredentials: false }
       )
       .then((response) => {
-        console.log('Veri başarıyla güncellendi:', response.data);
         this.update.emit(response.data);
         this.close.emit();
       })

@@ -2,8 +2,8 @@ import { Component, NgModule } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
-  Validators,
   ReactiveFormsModule,
+  Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
@@ -34,12 +34,10 @@ export class SignupComponent {
       const formData = this.signupForm.value;
       this.authService.signup(formData).subscribe({
         next: (data: any) => {
-          // Handle successful signup, navigate to login page for example
           this.router.navigate(['/login']);
         },
         error: (err) => {
           console.log('Signup error:', err);
-          // Handle error, maybe show user a message
         },
       });
     }

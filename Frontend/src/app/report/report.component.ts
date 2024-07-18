@@ -1,19 +1,19 @@
-import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NavbarComponent } from '../navbar/navbar.component';
-import { AuthService } from '../auth/auth.service';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import axios from 'axios';
+import { AuthService } from '../auth/auth.service';
 import { EditReportModalComponent } from '../edit-report-modal/edit-report-modal.component';
+import { NavbarComponent } from '../navbar/navbar.component';
 
 @Component({
-  selector: 'app-dashboard',
+  selector: 'app-report',
   standalone: true,
   imports: [NavbarComponent, CommonModule, EditReportModalComponent],
-  templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.css',
+  templateUrl: './report.component.html',
+  styleUrl: './report.component.css',
 })
-export class DashboardComponent {
+export class ReportComponent {
   authService = inject(AuthService);
   router = inject(Router);
   data: any[] = [];
@@ -33,11 +33,10 @@ export class DashboardComponent {
     axios
       .get('http://localhost:3000/draw/', { headers, withCredentials: false })
       .then((response) => {
-        console.log('Veri başarıyla alındı:', response.data);
         this.data = response.data;
       })
       .catch((error) => {
-        console.error('Veri alınamadı:', error);
+        console.error('Data could not be retrieved:', error);
       });
   }
 
@@ -56,7 +55,6 @@ export class DashboardComponent {
         withCredentials: false,
       })
       .then((response) => {
-        console.log('Veri başarıyla silindi:', response.data);
         this.getData();
       });
   }

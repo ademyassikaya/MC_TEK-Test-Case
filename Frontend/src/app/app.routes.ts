@@ -1,9 +1,9 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './login/login.component';
-import { SignupComponent } from './signup/signup.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
-import { AdminComponent } from './admin/admin.component';
 import { AuthGuard } from './auth/auth.guard';
+import { HomeComponent } from './home/home.component';
+import { LoginComponent } from './login/login.component';
+import { ReportComponent } from './report/report.component';
+import { SignupComponent } from './signup/signup.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -11,13 +11,13 @@ export const routes: Routes = [
   { path: 'signup', component: SignupComponent },
   {
     path: 'home',
-    component: AdminComponent,
+    component: HomeComponent,
     canActivate: [AuthGuard],
   },
   {
-    path: 'dashboard',
-    component: DashboardComponent,
+    path: 'report',
+    component: ReportComponent,
     canActivate: [AuthGuard],
   },
-  { path: '**', redirectTo: '/login' }, // Redirect any invalid paths to /login
+  { path: '**', redirectTo: '/login' },
 ];

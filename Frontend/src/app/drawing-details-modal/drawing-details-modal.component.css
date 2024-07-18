@@ -58,7 +58,6 @@
 .form-group label {
   margin-bottom: 5px;
   font-weight: bold;
-  /* Adjusted margin-right to create space between label and input */
   margin-right: 5px;
 }
 
@@ -71,7 +70,7 @@
 }
 
 .nameInput {
-  width: 100%; /* Adjusted width to fill the available space */
+  width: 100%; 
 }
 
 button {
@@ -114,7 +113,7 @@ button {
 
 
 .closeButton {
-  margin-left: 10px; /* Adjusted margin */
+  margin-left: 10px; 
   background-color: red;
   color: white;
 }
